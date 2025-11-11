@@ -39,6 +39,13 @@ async function run() {
       res.send(result);
     })
 
+    //? post api for create a post in the courses
+    app.post('/courses', async(req,res) => {
+      const newCourse = req.body
+      const result = await coursesCollection.insertOne(newCourse);
+      res.send(result)
+    })
+
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
