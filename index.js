@@ -54,6 +54,19 @@ async function run() {
       res.send(result)
     })
 
+    //? patch api for update some data in the courses
+    app.patch('/courses/:id', async(req,res) => {
+      const id = req.params.id
+      const query = {_id: new ObjectId(id)}
+      const updatedCourse = req.body
+      const update = {
+        $set: updatedCourse
+      }
+      const options = {}
+      const result = await coursesCollection.updateOne(query, update, options)
+      res.send(result)
+    })
+
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
