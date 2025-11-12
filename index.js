@@ -39,6 +39,14 @@ async function run() {
       res.send(result);
     })
 
+    //? get api for get single course from courses
+    app.get('/courses/:id', async(req,res) => {
+      const id = req.params.id
+      const query = {_id: new ObjectId(id)}
+      const result = await coursesCollection.findOne(query)
+      res.send(result)
+    })
+
     //? post api for create a post in the courses
     app.post('/courses', async(req,res) => {
       const newCourse = req.body
