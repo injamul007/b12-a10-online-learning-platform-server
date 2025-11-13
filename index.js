@@ -31,6 +31,7 @@ async function run() {
 
     const db = client.db('skilledHubDB');
     const coursesCollection = db.collection('courses');
+    const enrolledCollection = db.collection('enrolled');
 
     //? get api for get all the courses
     app.get('/courses', async(req,res) => {
@@ -90,6 +91,13 @@ async function run() {
       const cursor = coursesCollection.find(query);
       const result = await cursor.toArray();
       res.send(result);
+    })
+
+    //? post api for my Enrolled courses in new db collection
+    app.post('/my-enrolled', async(req,res) => {
+      const enrolledCourse = req.body
+      const result = await enrolledCollection.insertOne(enrolledCourse)
+      res.send(result)
     })
 
 
