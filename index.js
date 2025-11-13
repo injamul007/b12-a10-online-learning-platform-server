@@ -44,6 +44,13 @@ async function run() {
       res.send(result);
     });
 
+    //? get api for get popular courses by 6 featured data
+    app.get("/popular-courses", async (req, res) => {
+      const cursor = coursesCollection.find({ isFeatured : true}).limit(6);
+      const result = await cursor.toArray();
+      res.send(result)
+    });
+
     //? get api for get single course from courses
     app.get("/courses/:id", async (req, res) => {
       const id = req.params.id;
@@ -102,7 +109,7 @@ async function run() {
     //? get api for my Enrolled courses
     app.get("/my-enrolled", async (req, res) => {
       const email = req.query.email;
-      const cursor = enrolledCollection.find({enrolled_by: email});
+      const cursor = enrolledCollection.find({ enrolled_by: email });
       const result = await cursor.toArray();
       res.send(result);
     });
