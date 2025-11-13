@@ -34,7 +34,12 @@ async function run() {
 
     //? get api for get all the courses
     app.get('/courses', async(req,res) => {
-      const cursor = coursesCollection.find();
+      const email = req.query.email;
+      const query = {}
+      if(email) {
+        query["instructor.email"] = email;
+      }
+      const cursor = coursesCollection.find(query);
       const result = await cursor.toArray();
       res.send(result);
     })
@@ -73,6 +78,18 @@ async function run() {
       const options = {}
       const result = await coursesCollection.updateOne(query, update, options)
       res.send(result)
+    })
+
+    //? get api from using query email in my added courses
+    app.get('/my-courses', async(req,res) => {
+      const email = req.query.email;
+      const query = {}
+      if(email) {
+        query["instructor.email"] = email;
+      }
+      const cursor = coursesCollection.find(query);
+      const result = await cursor.toArray();
+      res.send(result);
     })
 
 
