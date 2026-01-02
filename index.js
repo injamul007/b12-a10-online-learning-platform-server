@@ -1,7 +1,7 @@
+require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
-require("dotenv").config();
 const app = express();
 const port = process.env.PORT || 3000;
 
@@ -17,7 +17,7 @@ const client = new MongoClient(uri, {
     strict: true,
     deprecationErrors: true,
   },
-});  
+});
 
 app.get("/", (req, res) => {
   res.send("SkilledHub - Online Learning Platform Server is Running...");
@@ -34,19 +34,14 @@ async function run() {
 
     //? get api for get all the courses
     app.get("/courses", async (req, res) => {
-      const email = req.query.email;
-      const query = {};
-      if (email) {
-        query["instructor.email"] = email;
-      }
-      const cursor = coursesCollection.find(query);
+      const cursor = coursesCollection.find().project({description: 0, instructor: 0, instructorId: 0, updatedAt: 0, createdAt: 0});
       const result = await cursor.toArray();
       res.send(result);
     });
 
-    //? get api for get popular courses by 6 featured data
+    //? get api for get popular courses by 8 featured data
     app.get("/popular-courses", async (req, res) => {
-      const cursor = coursesCollection.find({ isFeatured : true}).limit(6);
+      const cursor = coursesCollection.find({ isFeatured : true}).limit(8);
       const result = await cursor.toArray();
       res.send(result)
     });
