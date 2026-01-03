@@ -35,12 +35,20 @@ async function run() {
     //? get api for get all the courses
     app.get("/courses", async (req, res) => {
       try {
-        const {limit=0, skip=0 ,sort='durationInWeeks', order='desc'} = req.query
+        const {limit=0, skip=0 ,sort='durationInWeeks', order='desc', search=''} = req.query
+        console.log(search)
+        //? sortOptions
         const sortOptions = {};
         sortOptions[sort || 'durationInWeeks'] = order==='desc' ? -1 : 1
-        // console.log(sortOptions)
+        //? searchQuery
+        const query = {};
+        if(search) {
+          query.title = {$regex: search, $options: 'i'}
+        }
+        console.log(query)
+        //? sorted and paginated data
         const cursor = coursesCollection
-          .find()
+          .find(query)
           .sort(sortOptions)
           .limit(Number(limit))
           .skip(Number(skip))
@@ -52,7 +60,7 @@ async function run() {
             createdAt: 0,
           });
         const result = await cursor.toArray();
-        const totalCourses = await coursesCollection.countDocuments();
+        const totalCourses = await coursesCollection.countDocuments(query);
         res.status(200).json({
           status: true,
           message: "Get all the courses successful",
