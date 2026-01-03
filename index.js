@@ -34,16 +34,42 @@ async function run() {
 
     //? get api for get all the courses
     app.get("/courses", async (req, res) => {
-      const cursor = coursesCollection.find().project({description: 0, instructor: 0, instructorId: 0, updatedAt: 0, createdAt: 0});
-      const result = await cursor.toArray();
-      res.send(result);
+      try {
+        const {limit=0,skip=0} = req.query
+        const cursor = coursesCollection
+          .find()
+          .limit(Number(limit))
+          .skip(Number(skip))
+          .project({
+            description: 0,
+            instructor: 0,
+            instructorId: 0,
+            updatedAt: 0,
+            createdAt: 0,
+          });
+        const result = await cursor.toArray();
+        const totalCourses = await coursesCollection.countDocuments();
+        res.status(200).json({
+          status: true,
+          message: "Get all the courses successful",
+          length: result.length,
+          totalCourses,
+          result,
+        })
+      } catch (error) {
+        res.status(500).json({
+          status: false,
+          message: "Failed to get all the courses",
+          error: error.message,
+        })
+      }
     });
 
     //? get api for get popular courses by 8 featured data
     app.get("/popular-courses", async (req, res) => {
-      const cursor = coursesCollection.find({ isFeatured : true}).limit(8);
+      const cursor = coursesCollection.find({ isFeatured: true }).limit(8);
       const result = await cursor.toArray();
-      res.send(result)
+      res.send(result);
     });
 
     //? get api for get single course from courses
@@ -111,9 +137,7 @@ async function run() {
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
-    console.log(
-      "You successfully connected to MongoDB!"
-    );
+    console.log("You successfully connected to MongoDB!");
   } finally {
     // Ensures that the client will close when you finish/error
     // await client.close();
