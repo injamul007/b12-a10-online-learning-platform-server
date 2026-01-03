@@ -35,9 +35,13 @@ async function run() {
     //? get api for get all the courses
     app.get("/courses", async (req, res) => {
       try {
-        const {limit=0,skip=0} = req.query
+        const {limit=0, skip=0 ,sort='durationInWeeks', order='desc'} = req.query
+        const sortOptions = {};
+        sortOptions[sort || 'durationInWeeks'] = order==='desc' ? -1 : 1
+        // console.log(sortOptions)
         const cursor = coursesCollection
           .find()
+          .sort(sortOptions)
           .limit(Number(limit))
           .skip(Number(skip))
           .project({
