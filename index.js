@@ -35,17 +35,37 @@ async function run() {
     //? get api for get all the courses
     app.get("/courses", async (req, res) => {
       try {
-        const {limit=0, skip=0 ,sort='durationInWeeks', order='desc', search=''} = req.query
-        console.log(search)
+        const {
+          limit = 0,
+          skip = 0,
+          sort = "durationInWeeks",
+          order = "desc",
+          search = "",
+          filter = "",
+          price = "",
+        } = req.query;
         //? sortOptions
         const sortOptions = {};
-        sortOptions[sort || 'durationInWeeks'] = order==='desc' ? -1 : 1
-        //? searchQuery
+        sortOptions[sort || "durationInWeeks"] = order === "desc" ? -1 : 1;
+        //? Query
         const query = {};
-        if(search) {
-          query.title = {$regex: search, $options: 'i'}
+        //? Search by title (case-insensitive)
+        if (search) {
+          query.title = { $regex: search, $options: "i" };
         }
-        console.log(query)
+        //? Category filter (case-insensitive)
+        if (filter) {
+          query.category = { $regex: `^${filter}$`, $options: "i" };
+        }
+        //? Price filter (decimal range)
+        if (price) {
+          const [minPrice, maxPrice] = price.split("-").map(Number);
+
+          query.price = {
+            $gte: minPrice,
+            $lte: maxPrice,
+          };
+        }
         //? sorted and paginated data
         const cursor = coursesCollection
           .find(query)
@@ -67,13 +87,13 @@ async function run() {
           length: result.length,
           totalCourses,
           result,
-        })
+        });
       } catch (error) {
         res.status(500).json({
           status: false,
           message: "Failed to get all the courses",
           error: error.message,
-        })
+        });
       }
     });
 
