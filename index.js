@@ -167,6 +167,26 @@ async function run() {
       res.send(result);
     });
 
+    //? get single course details in my enrolled page in dashboard
+    app.get("/dashboard/my-enrolled/:id", async (req, res) => {
+      try {
+        const id = req.params.id;
+        const query = { _id: new ObjectId(id) };
+        const result = await enrolledCollection.findOne(query);
+        res.status(200).json({
+          status: true,
+          message: "Get Single Data in my enrolled page in dashboard",
+          result,
+        });
+      } catch (error) {
+        res.status(500).json({
+          status: false,
+          message: "Failed to get single data in my enrolled page",
+          error: error.message,
+        });
+      }
+    });
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log("You successfully connected to MongoDB!");
